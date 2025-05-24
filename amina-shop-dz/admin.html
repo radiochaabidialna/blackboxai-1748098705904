@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Amina Shop DZ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <!-- Navigation Bar -->
+  <nav class="bg-blue-700 text-white">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <a href="index.html" class="text-2xl font-bold">Amina Shop DZ</a>
+      <ul class="hidden md:flex space-x-6 items-center">
+        <li><a href="index.html" class="hover:text-gray-300">Accueil</a></li>
+        <li><a href="catalog.html" class="hover:text-gray-300">Catalogue</a></li>
+        <li><a href="cart.html" class="hover:text-gray-300"><i class="fas fa-shopping-cart"></i> Panier</a></li>
+        <li><a href="admin.html" class="hover:text-gray-300">Admin</a></li>
+        <li>
+          <button id="logout-btn" class="ml-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition">Logout</button>
+        </li>
+      </ul>
+      <div class="md:hidden">
+        <button id="menu-btn" class="focus:outline-none">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden bg-blue-700 text-white px-4 py-2 md:hidden">
+    <a href="index.html" class="block py-2 hover:text-gray-300">Accueil</a>
+    <a href="catalog.html" class="block py-2 hover:text-gray-300">Catalogue</a>
+    <a href="cart.html" class="block py-2 hover:text-gray-300">Panier</a>
+    <a href="admin.html" class="block py-2 hover:text-gray-300">Admin</a>
+  </div>
+
+  <!-- Admin Panel -->
+  <section class="container mx-auto py-12">
+    <h1 class="text-3xl font-bold mb-6">Panneau d'administration</h1>
+
+    <div class="mb-6 max-w-3xl mx-auto bg-white p-6 rounded shadow">
+      <h2 class="text-2xl font-bold mb-4 text-center">Ajouter un nouveau produit</h2>
+      <form id="add-product-form" class="space-y-4 max-w-xl mx-auto">
+        <div>
+          <label for="name" class="block font-semibold mb-1">Nom du produit</label>
+          <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="description" class="block font-semibold mb-1">Description</label>
+          <textarea id="description" name="description" rows="3" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+        </div>
+        <div>
+          <label for="price" class="block font-semibold mb-1">Prix (DZD)</label>
+          <input type="number" id="price" name="price" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="category" class="block font-semibold mb-1">Catégorie</label>
+          <select id="category" name="category" required class="w-full border border-gray-300 rounded px-3 py-2">
+            <!-- Categories options inserted by JS -->
+          </select>
+        </div>
+        <div>
+          <label for="stock" class="block font-semibold mb-1">Stock</label>
+          <input type="number" id="stock" name="stock" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="promotion" class="inline-flex items-center space-x-2">
+            <input type="checkbox" id="promotion" name="promotion" />
+            <span>En promotion</span>
+          </label>
+        </div>
+        <div>
+          <label for="new" class="inline-flex items-center space-x-2">
+            <input type="checkbox" id="new" name="new" />
+            <span>Nouveau</span>
+          </label>
+        </div>
+        <div>
+          <label for="images" class="block font-semibold mb-1">Images (URLs, séparées par des virgules)</label>
+          <input type="text" id="images" name="images" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="sizes" class="block font-semibold mb-1">Tailles (séparées par des virgules)</label>
+          <input type="text" id="sizes" name="sizes" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="colors" class="block font-semibold mb-1">Couleurs (séparées par des virgules)</label>
+          <input type="text" id="colors" name="colors" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition w-full">Ajouter le produit</button>
+      </form>
+    </div>
+
+    <div class="mt-8 max-w-6xl mx-auto">
+      <h2 class="text-2xl font-bold mb-4">Liste des produits</h2>
+      <div class="overflow-x-auto rounded shadow border border-gray-300 bg-white">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix (DZD)</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Promotion</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nouveau</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-list" class="divide-y divide-gray-200">
+            <!-- Products list inserted by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Fetch categories and populate category selects
+    async function fetchCategories() {
+      try {
+        const res = await fetch('backend/api/categories.php');
+        const categories = await res.json();
+        const categorySelect = document.getElementById('category');
+        categorySelect.innerHTML = '';
+        categories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.id;
+          option.textContent = cat.name;
+          categorySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    }
+
+    // Load products and display in admin panel
+    async function loadProducts() {
+      try {
+        const res = await fetch('backend/api/products.php');
+        const products = await res.json();
+        const tbody = document.getElementById('products-list');
+        tbody.innerHTML = '';
+
+        products.forEach(product => {
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">${product.id}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.name}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.price.toFixed(2)}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.category_name || ''}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.stock}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.promotion == 1 ? 'Oui' : 'Non'}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${product.new == 1 ? 'Oui' : 'Non'}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button class="edit-btn bg-blue-600 text-white px-3 py-1 rounded mr-2" data-id="${product.id}">Modifier</button>
+              <button class="delete-btn bg-red-600 text-white px-3 py-1 rounded" data-id="${product.id}">Supprimer</button>
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        // Add event listeners for edit buttons
+        document.querySelectorAll('.edit-btn').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            const id = e.target.getAttribute('data-id');
+            try {
+              const res = await fetch(`backend/api/products.php?id=${id}`);
+              const product = await res.json();
+              if (product) {
+                openEditModal(product);
+              } else {
+                alert('Produit non trouvé');
+              }
+            } catch (error) {
+              alert('Erreur lors du chargement du produit');
+              console.error(error);
+            }
+          });
+        });
+
+        // Add event listeners for delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            const id = e.target.getAttribute('data-id');
+            if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
+              try {
+                const res = await fetch(`backend/api/products.php?id=${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                  alert('Produit supprimé');
+                  loadProducts();
+                } else {
+                  alert('Erreur lors de la suppression');
+                }
+              } catch (error) {
+                alert('Erreur lors de la suppression');
+                console.error(error);
+              }
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Erreur lors du chargement des produits:', error);
+      }
+    }
+
+    // Open edit modal and fill form
+    function openEditModal(product) {
+      const modal = document.getElementById('edit-modal');
+      modal.classList.remove('hidden');
+      document.getElementById('edit-id').value = product.id;
+      document.getElementById('edit-name').value = product.name || '';
+      document.getElementById('edit-description').value = product.description || '';
+      document.getElementById('edit-price').value = product.price || 0;
+      document.getElementById('edit-category').value = product.category_id || 1;
+      document.getElementById('edit-stock').value = product.stock || 0;
+      document.getElementById('edit-promotion').checked = product.promotion == 1;
+      document.getElementById('edit-new').checked = product.new == 1;
+      document.getElementById('edit-images').value = Array.isArray(product.images) ? product.images.join(', ') : '';
+      document.getElementById('edit-sizes').value = Array.isArray(product.sizes) ? product.sizes.join(', ') : '';
+      document.getElementById('edit-colors').value = Array.isArray(product.colors) ? product.colors.join(', ') : '';
+    }
+
+    // Close edit modal
+    document.getElementById('close-edit-modal').addEventListener('click', () => {
+      document.getElementById('edit-modal').classList.add('hidden');
+    });
+
+    // Edit product form submission
+    document.getElementById('edit-product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = {
+        id: parseInt(form.id.value),
+        name: form.name.value,
+        description: form.description.value,
+        price: parseFloat(form.price.value),
+        category_id: parseInt(form.category.value),
+        stock: parseInt(form.stock.value),
+        promotion: form.promotion.checked ? 1 : 0,
+        new: form.new.checked ? 1 : 0,
+        images: form.images.value.split(',').map(s => s.trim()).filter(s => s),
+        sizes: form.sizes.value.split(',').map(s => s.trim()).filter(s => s),
+        colors: form.colors.value.split(',').map(s => s.trim()).filter(s => s)
+      };
+
+      try {
+        const res = await fetch('backend/api/products.php', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Produit modifié');
+          document.getElementById('edit-modal').classList.add('hidden');
+          loadProducts();
+        } else {
+          alert('Erreur lors de la modification du produit');
+        }
+      } catch (error) {
+        alert('Erreur lors de la modification du produit');
+        console.error(error);
+      }
+    });
+
+    // Add new product form submission
+    document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = {
+        name: form.name.value,
+        description: form.description.value,
+        price: parseFloat(form.price.value),
+        category_id: parseInt(form.category.value),
+        stock: parseInt(form.stock.value),
+        promotion: form.promotion.checked ? 1 : 0,
+        new: form.new.checked ? 1 : 0,
+        images: form.images.value.split(',').map(s => s.trim()).filter(s => s),
+        sizes: form.sizes.value.split(',').map(s => s.trim()).filter(s => s),
+        colors: form.colors.value.split(',').map(s => s.trim()).filter(s => s)
+      };
+
+      try {
+        const res = await fetch('backend/api/products.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Produit ajouté');
+          form.reset();
+          loadProducts();
+        } else {
+          alert('Erreur lors de l\'ajout du produit');
+        }
+      } catch (error) {
+        alert('Erreur lors de l\'ajout du produit');
+        console.error(error);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchCategories();
+      loadProducts();
+    });
+  </script>
+
+  <!-- Edit product modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden overflow-auto p-4">
+    <div class="bg-white rounded-lg p-6 w-full max-w-3xl relative max-h-[90vh] overflow-y-auto">
+      <button id="close-edit-modal" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-xl font-bold">&times;</button>
+      <h2 class="text-2xl font-bold mb-4">Modifier le produit</h2>
+      <form id="edit-product-form" class="space-y-4">
+        <input type="hidden" id="edit-id" name="id" />
+        <div>
+          <label for="edit-name" class="block font-semibold mb-1">Nom du produit</label>
+          <input type="text" id="edit-name" name="name" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="edit-description" class="block font-semibold mb-1">Description</label>
+          <textarea id="edit-description" name="description" rows="3" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+        </div>
+        <div>
+          <label for="edit-price" class="block font-semibold mb-1">Prix (DZD)</label>
+          <input type="number" id="edit-price" name="price" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="edit-category" class="block font-semibold mb-1">Catégorie</label>
+          <select id="edit-category" name="category" required class="w-full border border-gray-300 rounded px-3 py-2">
+            <!-- Categories options inserted by JS -->
+          </select>
+        </div>
+        <div>
+          <label for="edit-stock" class="block font-semibold mb-1">Stock</label>
+          <input type="number" id="edit-stock" name="stock" required class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="edit-promotion" class="inline-flex items-center space-x-2">
+            <input type="checkbox" id="edit-promotion" name="promotion" />
+            <span>En promotion</span>
+          </label>
+        </div>
+        <div>
+          <label for="edit-new" class="inline-flex items-center space-x-2">
+            <input type="checkbox" id="edit-new" name="new" />
+            <span>Nouveau</span>
+          </label>
+        </div>
+        <div>
+          <label for="edit-images" class="block font-semibold mb-1">Images (URLs, séparées par des virgules)</label>
+          <input type="text" id="edit-images" name="images" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="edit-sizes" class="block font-semibold mb-1">Tailles (séparées par des virgules)</label>
+          <input type="text" id="edit-sizes" name="sizes" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <div>
+          <label for="edit-colors" class="block font-semibold mb-1">Couleurs (séparées par des virgules)</label>
+          <input type="text" id="edit-colors" name="colors" class="w-full border border-gray-300 rounded px-3 py-2" />
+        </div>
+        <button type="submit" class="bg-blue-700 text-white px-6 py-3 rounded hover:bg-blue-800 transition w-full">Enregistrer les modifications</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+</create_file>
