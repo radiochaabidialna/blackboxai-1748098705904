@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Détails du produit - Amina Shop DZ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <!-- Navigation Bar -->
+  <nav class="bg-blue-700 text-white">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <a href="index.html" class="text-2xl font-bold">Amina Shop DZ</a>
+      <ul class="hidden md:flex space-x-6">
+        <li><a href="index.html" class="hover:text-gray-300">Accueil</a></li>
+        <li><a href="catalog.html" class="hover:text-gray-300">Catalogue</a></li>
+        <li><a href="cart.html" class="hover:text-gray-300"><i class="fas fa-shopping-cart"></i> Panier <span id="cart-count" class="ml-1 bg-red-600 text-white rounded-full px-2 text-xs"></span></a></li>
+        <li><a href="admin.html" class="hover:text-gray-300">Admin</a></li>
+      </ul>
+      <div class="md:hidden">
+        <button id="menu-btn" class="focus:outline-none">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden bg-blue-700 text-white px-4 py-2 md:hidden">
+    <a href="index.html" class="block py-2 hover:text-gray-300">Accueil</a>
+    <a href="catalog.html" class="block py-2 hover:text-gray-300">Catalogue</a>
+    <a href="cart.html" class="block py-2 hover:text-gray-300">Panier</a>
+    <a href="admin.html" class="block py-2 hover:text-gray-300">Admin</a>
+  </div>
+
+  <!-- Product Details -->
+  <section class="container mx-auto py-12">
+    <div id="product-details" class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
+      <!-- Product images and info inserted by JS -->
+    </div>
+  </section>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Get product ID from URL
+    function getProductId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    // Fetch product details
+    async function fetchProduct(id) {
+      try {
+        const res = await fetch(`backend/api/products.php?id=${id}`);
+        if (!res.ok) throw new Error('Produit non trouvé');
+        const product = await res.json();
+        return product;
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+        return null;
+      }
+    }
+
+    // Render product details
+    function renderProduct(product) {
+      if (!product) {
+        document.getElementById('product-details').innerHTML = '<p>Produit non trouvé.</p>';
+        return;
+      }
+      const container = document.getElementById('product-details');
+      container.innerHTML = '';
+
+      // Images carousel (simple)
+      const imagesDiv = document.createElement('div');
+      imagesDiv.className = 'flex flex-col md:w-1/2';
+      const mainImg = document.createElement('img');
+      mainImg.src = product.images && product.images.length > 0 ? product.images[0] : '';
+      mainImg.alt = product.name;
+      mainImg.className = 'rounded-lg mb-4 w-full h-auto object-cover';
+      imagesDiv.appendChild(mainImg);
+
+      if (product.images && product.images.length > 1) {
+        const thumbsDiv = document.createElement('div');
+        thumbsDiv.className = 'flex space-x-2';
+        product.images.forEach((img, idx) => {
+          const thumb = document.createElement('img');
+          thumb.src = img;
+          thumb.alt = product.name + ' ' + (idx + 1);
+          thumb.className = 'w-16 h-16 rounded cursor-pointer object-cover border border-gray-300';
+          thumb.addEventListener('click', () => {
+            mainImg.src = img;
+          });
+          thumbsDiv.appendChild(thumb);
+        });
+        imagesDiv.appendChild(thumbsDiv);
+      }
+
+      // Info div
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'md:w-1/2 flex flex-col';
+
+      const title = document.createElement('h1');
+      title.className = 'text-3xl font-bold mb-4';
+      title.textContent = product.name;
+
+      const price = document.createElement('p');
+      price.className = 'text-blue-700 text-2xl font-bold mb-4';
+      price.textContent = product.price + ' DZD';
+
+      const description = document.createElement('p');
+      description.className = 'mb-4';
+      description.textContent = product.description || '';
+
+      // Sizes
+      const sizesLabel = document.createElement('label');
+      sizesLabel.textContent = 'Tailles :';
+      sizesLabel.className = 'font-semibold mb-1';
+      const sizesSelect = document.createElement('select');
+      sizesSelect.className = 'border border-gray-300 rounded px-3 py-1 mb-4';
+      if (product.sizes && product.sizes.length > 0) {
+        product.sizes.forEach(size => {
+          const option = document.createElement('option');
+          option.value = size;
+          option.textContent = size;
+          sizesSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.textContent = 'Unique';
+        sizesSelect.appendChild(option);
+      }
+
+      // Colors
+      const colorsLabel = document.createElement('label');
+      colorsLabel.textContent = 'Couleurs :';
+      colorsLabel.className = 'font-semibold mb-1';
+      const colorsSelect = document.createElement('select');
+      colorsSelect.className = 'border border-gray-300 rounded px-3 py-1 mb-4';
+      if (product.colors && product.colors.length > 0) {
+        product.colors.forEach(color => {
+          const option = document.createElement('option');
+          option.value = color;
+          option.textContent = color;
+          colorsSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.textContent = 'Unique';
+        colorsSelect.appendChild(option);
+      }
+
+      // Add to cart button
+      const addToCartBtn = document.createElement('button');
+      addToCartBtn.className = 'bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition';
+      addToCartBtn.textContent = 'Ajouter au panier';
+      addToCartBtn.addEventListener('click', async () => {
+        try {
+          const selectedSize = sizesSelect.value;
+          const selectedColor = colorsSelect.value;
+          const quantity = parseInt(quantityInput.value) || 1;
+          const res = await fetch('backend/api/cart.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: product.id, size: selectedSize, color: selectedColor, quantity: quantity })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert('Produit ajouté au panier');
+            updateCartCount();
+          } else {
+            alert('Erreur lors de l\'ajout au panier');
+          }
+        } catch (error) {
+          alert('Erreur lors de l\'ajout au panier');
+          console.error(error);
+        }
+      });
+
+      infoDiv.appendChild(title);
+      infoDiv.appendChild(price);
+      infoDiv.appendChild(description);
+      infoDiv.appendChild(sizesLabel);
+      infoDiv.appendChild(sizesSelect);
+      infoDiv.appendChild(colorsLabel);
+      infoDiv.appendChild(colorsSelect);
+
+      // Quantity input
+      const quantityLabel = document.createElement('label');
+      quantityLabel.textContent = 'Quantité :';
+      quantityLabel.className = 'font-semibold mb-1';
+      const quantityInput = document.createElement('input');
+      quantityInput.type = 'number';
+      quantityInput.min = '1';
+      quantityInput.value = '1';
+      quantityInput.className = 'border border-gray-300 rounded px-3 py-1 mb-4 w-20';
+      infoDiv.appendChild(quantityLabel);
+      infoDiv.appendChild(quantityInput);
+
+      infoDiv.appendChild(addToCartBtn);
+
+      container.appendChild(imagesDiv);
+      container.appendChild(infoDiv);
+    }
+
+    // Cart count update
+    async function updateCartCount() {
+      try {
+        const res = await fetch('backend/api/cart.php');
+        const cart = await res.json();
+        const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const cartCountElem = document.getElementById('cart-count');
+        cartCountElem.textContent = count > 0 ? count : '';
+      } catch (error) {
+        console.error('Failed to update cart count:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const productId = getProductId();
+      if (!productId) {
+        document.getElementById('product-details').innerHTML = '<p>Produit non trouvé.</p>';
+        return;
+      }
+      const product = await fetchProduct(productId);
+      renderProduct(product);
+      updateCartCount();
+    });
+  </script>
+</body>
+</html>
